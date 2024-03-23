@@ -3,6 +3,7 @@ package codes.meruhz.multilang.api.providers;
 import codes.meruhz.multilang.api.Message;
 import codes.meruhz.multilang.api.MessageStorage;
 import codes.meruhz.multilang.api.MessageUtils;
+import codes.meruhz.multilang.api.locale.Locale;
 import codes.meruhz.multilang.api.main.Multilang;
 import codes.meruhz.multilang.api.model.JsonStructureModel;
 import org.jetbrains.annotations.NotNull;

@@ -2,6 +2,7 @@ package codes.meruhz.multilang.versions.standard;
 
 import codes.meruhz.multilang.api.Message;
 import codes.meruhz.multilang.api.StorageSerializer;
+import codes.meruhz.multilang.api.locale.Locale;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,14 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class StandardSerializer implements StorageSerializer<StandardMessageStorage> {
 
     @Override
     public @NotNull JsonElement serialize(@NotNull StandardMessageStorage storage) {
-        @NotNull StandardUtils standardUtils = (StandardUtils) storage.getUtils();
         @NotNull JsonObject jsonObject = new JsonObject();
 
         jsonObject.addProperty("name", storage.getName());
@@ -28,14 +27,14 @@ public class StandardSerializer implements StorageSerializer<StandardMessageStor
             @NotNull JsonObject contentJson = new JsonObject();
 
             for(Map.Entry<Locale, String> content : message.getLocales().entrySet()) {
-                contentJson.addProperty(standardUtils.localeToString(content.getKey()), content.getValue());
+                contentJson.addProperty(content.getKey().toString(), content.getValue());
             }
 
             for(Map.Entry<Locale, List<String>> arrayContent : message.getArrayLocales().entrySet()) {
                 @NotNull JsonArray contentArray = new JsonArray();
 
                 arrayContent.getValue().forEach(contentArray::add);
-                contentJson.add(standardUtils.localeToString(arrayContent.getKey()), contentArray);
+                contentJson.add(arrayContent.getKey().toString(), contentArray);
             }
 
             messageJson.add("content", contentJson);
@@ -49,14 +48,13 @@ public class StandardSerializer implements StorageSerializer<StandardMessageStor
     @Override
     public @NotNull StandardMessageStorage deserialize(@NotNull JsonElement element) {
         try {
-            @NotNull StandardUtils standardUtils = new StandardUtils();
             @NotNull JsonObject jsonObject = element.getAsJsonObject();
 
             @NotNull String name = jsonObject.get("name").getAsString();
-            @NotNull Locale defaultLocale = standardUtils.stringToLocale(jsonObject.get("default locale").getAsString());
+            @NotNull Locale defaultLocale = Locale.valueOf(jsonObject.get("default locale").getAsString());
 
             @NotNull JsonObject messagesJson = jsonObject.getAsJsonObject("messages");
-            @NotNull StandardMessageStorage storage = new StandardMessageStorage(name, defaultLocale, standardUtils);
+            @NotNull StandardMessageStorage storage = new StandardMessageStorage(name, defaultLocale, new StandardUtils());
 
             messagesJson.asMap().forEach((id, messageElement) -> {
                 @NotNull JsonObject messageJson = messageElement.getAsJsonObject();
@@ -65,7 +63,7 @@ public class StandardSerializer implements StorageSerializer<StandardMessageStor
                 @NotNull StandardMessage message = new StandardMessage(storage, id);
 
                 contentJson.asMap().forEach((stringLocale, content) -> {
-                    @NotNull Locale locale = standardUtils.stringToLocale(stringLocale);
+                    @NotNull Locale locale = Locale.valueOf(stringLocale);
 
                     if(content.isJsonArray()) {
                         @NotNull List<@NotNull String> arrayText = new LinkedList<>();

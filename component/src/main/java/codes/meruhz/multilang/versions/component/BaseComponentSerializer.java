@@ -2,6 +2,7 @@ package codes.meruhz.multilang.versions.component;
 
 import codes.meruhz.multilang.api.Message;
 import codes.meruhz.multilang.api.StorageSerializer;
+import codes.meruhz.multilang.api.locale.Locale;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class BaseComponentSerializer implements StorageSerializer<BaseComponentMessageStorage> {
@@ -30,14 +30,14 @@ public class BaseComponentSerializer implements StorageSerializer<BaseComponentM
             @NotNull JsonObject contentJson = new JsonObject();
 
             for(Map.Entry<Locale, BaseComponent[]> content : message.getLocales().entrySet()) {
-                contentJson.addProperty(baseComponentUtils.localeToString(content.getKey()), baseComponentUtils.getLegacyText(content.getValue()));
+                contentJson.addProperty(content.getKey().toString(), baseComponentUtils.getLegacyText(content.getValue()));
             }
 
             for(Map.Entry<Locale, List<BaseComponent[]>> arrayContent : message.getArrayLocales().entrySet()) {
                 @NotNull JsonArray contentArray = new JsonArray();
 
                 baseComponentUtils.getLegacyArray(arrayContent.getValue()).forEach(contentArray::add);
-                contentJson.add(baseComponentUtils.localeToString(arrayContent.getKey()), contentArray);
+                contentJson.add(arrayContent.getKey().toString(), contentArray);
             }
 
             messageJson.add("content", contentJson);
@@ -55,7 +55,7 @@ public class BaseComponentSerializer implements StorageSerializer<BaseComponentM
             @NotNull JsonObject jsonObject = element.getAsJsonObject();
 
             @NotNull String name = jsonObject.get("name").getAsString();
-            @NotNull Locale defaultLocale = baseComponentUtils.stringToLocale(jsonObject.get("default locale").getAsString());
+            @NotNull Locale defaultLocale = Locale.valueOf(jsonObject.get("default locale").getAsString());
 
             @NotNull JsonObject messagesJson = jsonObject.getAsJsonObject("messages");
             @NotNull BaseComponentMessageStorage storage = new BaseComponentMessageStorage(name, defaultLocale, baseComponentUtils);
@@ -67,7 +67,7 @@ public class BaseComponentSerializer implements StorageSerializer<BaseComponentM
                 @NotNull BaseComponentMessage message = new BaseComponentMessage(storage, id);
 
                 contentJson.asMap().forEach((stringLocale, content) -> {
-                    @NotNull Locale locale = baseComponentUtils.stringToLocale(stringLocale);
+                    @NotNull Locale locale = Locale.valueOf(stringLocale);
 
                     if(content.isJsonArray()) {
                         @NotNull List<BaseComponent @NotNull []> arrayText = new LinkedList<>();

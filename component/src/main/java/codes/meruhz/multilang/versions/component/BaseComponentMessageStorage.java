@@ -1,13 +1,13 @@
 package codes.meruhz.multilang.versions.component;
 
 import codes.meruhz.multilang.api.MessageUtils;
+import codes.meruhz.multilang.api.locale.Locale;
 import codes.meruhz.multilang.api.main.Multilang;
 import codes.meruhz.multilang.api.providers.AbstractMessageStorage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class BaseComponentMessageStorage extends AbstractMessageStorage<BaseComponent[]> {

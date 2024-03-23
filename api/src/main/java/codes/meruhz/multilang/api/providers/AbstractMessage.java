@@ -2,11 +2,11 @@ package codes.meruhz.multilang.api.providers;
 
 import codes.meruhz.multilang.api.Message;
 import codes.meruhz.multilang.api.MessageStorage;
+import codes.meruhz.multilang.api.locale.Locale;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 public abstract class AbstractMessage<T> implements Message<T> {

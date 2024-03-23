@@ -1,10 +1,10 @@
 package codes.meruhz.multilang.api;
 
 import codes.meruhz.multilang.api.content.KeyedContent;
+import codes.meruhz.multilang.api.locale.Locale;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public interface Message<T> {

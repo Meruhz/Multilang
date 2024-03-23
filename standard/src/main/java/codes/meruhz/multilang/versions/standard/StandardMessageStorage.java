@@ -1,10 +1,10 @@
 package codes.meruhz.multilang.versions.standard;
 
+import codes.meruhz.multilang.api.locale.Locale;
 import codes.meruhz.multilang.api.main.Multilang;
 import codes.meruhz.multilang.api.providers.AbstractMessageStorage;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class StandardMessageStorage extends AbstractMessageStorage<String> {
