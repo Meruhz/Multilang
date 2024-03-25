@@ -56,14 +56,15 @@ public class StandardSerializer implements StorageSerializer<StandardMessageStor
             @NotNull JsonObject messagesJson = jsonObject.getAsJsonObject("messages");
             @NotNull StandardMessageStorage storage = new StandardMessageStorage(name, defaultLocale, new StandardUtils());
 
-            messagesJson.asMap().forEach((id, messageElement) -> {
-                @NotNull JsonObject messageJson = messageElement.getAsJsonObject();
+            for(Map.Entry<String, JsonElement> messages : messagesJson.entrySet()) {
+                @NotNull JsonObject messageJson = messages.getValue().getAsJsonObject();
                 @NotNull JsonObject contentJson = messageJson.getAsJsonObject("content");
 
-                @NotNull StandardMessage message = new StandardMessage(storage, id);
+                @NotNull StandardMessage message = new StandardMessage(storage, messages.getKey());
 
-                contentJson.asMap().forEach((stringLocale, content) -> {
-                    @NotNull Locale locale = Locale.valueOf(stringLocale);
+                for(Map.Entry<String, JsonElement> contents : contentJson.entrySet()) {
+                    @NotNull Locale locale = Locale.valueOf(contents.getKey());
+                    @NotNull JsonElement content = contents.getValue();
 
                     if(content.isJsonArray()) {
                         @NotNull List<@NotNull String> arrayText = new LinkedList<>();
@@ -77,15 +78,15 @@ public class StandardSerializer implements StorageSerializer<StandardMessageStor
                     } else {
                         message.getLocales().put(locale, content.getAsString());
                     }
-                });
+                }
 
                 storage.getMessages().add(message).join();
-            });
+            }
 
             return storage;
 
         } catch (Throwable throwable) {
-            throw new RuntimeException("failed to deserialize: " + element);
+            throw new RuntimeException("invalid syntax: " + element, throwable);
         }
     }
 }

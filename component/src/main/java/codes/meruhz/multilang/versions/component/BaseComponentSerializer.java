@@ -60,14 +60,15 @@ public class BaseComponentSerializer implements StorageSerializer<BaseComponentM
             @NotNull JsonObject messagesJson = jsonObject.getAsJsonObject("messages");
             @NotNull BaseComponentMessageStorage storage = new BaseComponentMessageStorage(name, defaultLocale, baseComponentUtils);
 
-            messagesJson.asMap().forEach((id, messageElement) -> {
-                @NotNull JsonObject messageJson = messageElement.getAsJsonObject();
+            for(Map.Entry<String, JsonElement> messages : messagesJson.entrySet()) {
+                @NotNull JsonObject messageJson = messages.getValue().getAsJsonObject();
                 @NotNull JsonObject contentJson = messageJson.getAsJsonObject("content");
 
-                @NotNull BaseComponentMessage message = new BaseComponentMessage(storage, id);
+                @NotNull BaseComponentMessage message = new BaseComponentMessage(storage, messages.getKey());
 
-                contentJson.asMap().forEach((stringLocale, content) -> {
-                    @NotNull Locale locale = Locale.valueOf(stringLocale);
+                for(Map.Entry<String, JsonElement> contents : contentJson.entrySet()) {
+                    @NotNull Locale locale = Locale.valueOf(contents.getKey());
+                    @NotNull JsonElement content = contents.getValue();
 
                     if(content.isJsonArray()) {
                         @NotNull List<BaseComponent @NotNull []> arrayText = new LinkedList<>();
@@ -81,15 +82,15 @@ public class BaseComponentSerializer implements StorageSerializer<BaseComponentM
                     } else {
                         message.getLocales().put(locale, new BaseComponent[]{new TextComponent(baseComponentUtils.getLegacyText(new TextComponent(content.getAsString())))});
                     }
-                });
+                }
 
                 storage.getMessages().add(message).join();
-            });
+            }
 
             return storage;
 
         } catch (Throwable throwable) {
-            throw new RuntimeException("failed to deserialize: " + element);
+            throw new RuntimeException("invalid syntax: " + element, throwable);
         }
     }
 }
